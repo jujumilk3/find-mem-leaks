@@ -7,6 +7,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from tqdm import tqdm
 
 # define models
 Base = declarative_base()
@@ -67,18 +68,14 @@ async def perform_random_crud_operations(
     start_memory = get_memory_usage()
     print(f"Initial memory usage: {start_memory:.2f} MB")
 
-    for i in range(num_operations):
+    for i in tqdm(range(num_operations)):
         # 남은 작업 수에 따라 비율 동적 조정
         remaining = num_operations - i
         current_ratios = {
-            "create": (create_ratio * num_operations - operations_count["create"])
-            / remaining,
-            "read": (read_ratio * num_operations - operations_count["read"])
-            / remaining,
-            "update": (update_ratio * num_operations - operations_count["update"])
-            / remaining,
-            "delete": (delete_ratio * num_operations - operations_count["delete"])
-            / remaining,
+            "create": (create_ratio * num_operations - operations_count["create"]) / remaining,
+            "read": (read_ratio * num_operations - operations_count["read"]) / remaining,
+            "update": (update_ratio * num_operations - operations_count["update"]) / remaining,
+            "delete": (delete_ratio * num_operations - operations_count["delete"]) / remaining,
         }
 
         # 음수 비율 처리
@@ -91,9 +88,7 @@ async def perform_random_crud_operations(
         current_ratios = {k: v / total for k, v in current_ratios.items()}
 
         # 작업 선택
-        operation = random.choices(
-            list(current_ratios.keys()), weights=list(current_ratios.values())
-        )[0]
+        operation = random.choices(list(current_ratios.keys()), weights=list(current_ratios.values()))[0]
 
         operations_count[operation] += 1
 
@@ -113,14 +108,10 @@ async def perform_random_crud_operations(
             count = result.scalar()
             if count > 0:
                 post_id = random.randint(1, max(1, count))
-                result = await session.execute(
-                    f"SELECT * FROM posts WHERE id = {post_id}"
-                )
+                result = await session.execute(f"SELECT * FROM posts WHERE id = {post_id}")
                 post = result.first()
                 if post:
-                    comments_result = await session.execute(
-                        f"SELECT * FROM comments WHERE post_id = {post_id}"
-                    )
+                    comments_result = await session.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
                     _ = comments_result.fetchall()
 
         elif operation == "update":
@@ -145,7 +136,7 @@ async def perform_random_crud_operations(
             print(f"Completed {i + 1} operations")
 
     end_memory = get_memory_usage()
-    
+
     if DEBUG is True:
         print("\nOperation counts:")
         for operation, count in operations_count.items():
@@ -159,7 +150,7 @@ async def perform_random_crud_operations(
     return {
         "initial_memory": round(start_memory, 2),
         "final_memory": round(end_memory, 2),
-        "memory_diff": round(end_memory - start_memory, 2),        
+        "memory_diff": round(end_memory - start_memory, 2),
         "num_operations": num_operations,
         "create_ratio": create_ratio,
         "read_ratio": read_ratio,
@@ -198,89 +189,121 @@ async def main(
 
 if __name__ == "__main__":
     DEBUG = False
-    
+
     # ================= 10,000 operations =================
-    
+
+    # for _ in range(10):
+    #     result_10000_operations = asyncio.run(
+    #         main(
+    #             num_operations=10000,
+    #             create_ratio=0.25,
+    #             read_ratio=0.25,
+    #             update_ratio=0.25,
+    #             delete_ratio=0.25,
+    #         )
+    #     )
+    #     print("**result_10000_operations**")
+    #     print(result_10000_operations)
+
+    # ================= 100,000 operations =================
+
+    # for _ in range(10):
+    #     result_100000_operations = asyncio.run(
+    #         main(
+    #             num_operations=100000,
+    #             create_ratio=0.25,
+    #             read_ratio=0.25,
+    #             update_ratio=0.25,
+    #             delete_ratio=0.25,
+    #         )
+    #     )
+    #     # print("result_100000_operations")
+    #     # print(result_100000_operations)
+    #     print(
+    #         f"| sqlalchemy1x | result_100000_operations | {_+1} | {result_100000_operations['memory_diff']} | {result_100000_operations['initial_memory']} | {result_100000_operations['final_memory']} | {result_100000_operations['num_operations']} | {result_100000_operations['create_ratio']} | {result_100000_operations['read_ratio']} | {result_100000_operations['update_ratio']} | {result_100000_operations['delete_ratio']} |"
+    #     )
+
+    # ================= 1,000,000 operations =================
+
     for _ in range(10):
-        result_10000_operations = asyncio.run(
+        result_1000000_operations = asyncio.run(
             main(
-                num_operations=10000,
+                num_operations=1000000,
                 create_ratio=0.25,
                 read_ratio=0.25,
                 update_ratio=0.25,
                 delete_ratio=0.25,
             )
         )
-        print("**result_10000_operations**")
-        print(result_10000_operations)
+        print(
+            f"| sqlalchemy1x | 1000000_operations | {_+1} | {result_1000000_operations['memory_diff']} | {result_1000000_operations['initial_memory']} | {result_1000000_operations['final_memory']} | {result_1000000_operations['num_operations']} | {result_1000000_operations['create_ratio']} | {result_1000000_operations['read_ratio']} | {result_1000000_operations['update_ratio']} | {result_1000000_operations['delete_ratio']} |"
+        )
 
-    # ================= 100,000 operations =================
-
-    # result_100000_operations = asyncio.run(
-    #     main(
-    #         num_operations=100000,
-    #         create_ratio=0.25,
-    #         read_ratio=0.25,
-    #         update_ratio=0.25,
-    #         delete_ratio=0.25,
-    #     )
-    # )
-    # print("result_100000_operations")
-    # print(result_100000_operations)
-    # print("=" * 50)
-    
     # ================= Create heavy =================
-    # result_create_heavy = asyncio.run(
-    #     main(
-    #         num_operations=10000,
-    #         create_ratio=0.5,
-    #         read_ratio=0.2,
-    #         update_ratio=0.2,
-    #         delete_ratio=0.1,
+    # for _ in range(5):
+    #     result_create_heavy = asyncio.run(
+    #         main(
+    #             num_operations=10000,
+    #             create_ratio=0.5,
+    #             read_ratio=0.2,
+    #             update_ratio=0.2,
+    #             delete_ratio=0.1,
+    #         )
     #     )
-    # )
-    # print("result_create_heavy")
-    # print(result_create_heavy)
-    # print("=" * 50)
-    
+    #     print("result_create_heavy")
+    #     print(result_create_heavy)
+    #     print(
+    #         f"| sqlalchemy1x | result_create_heavy | {_+1} | {result_create_heavy['memory_diff']} | {result_create_heavy['initial_memory']} | {result_create_heavy['final_memory']} | {result_create_heavy['num_operations']} | {result_create_heavy['create_ratio']} | {result_create_heavy['read_ratio']} | {result_create_heavy['update_ratio']} | {result_create_heavy['delete_ratio']} |"
+    #     )
+
     # ================= Read heavy =================
-    # result_read_heavy = asyncio.run(
-    #     main(
-    #         num_operations=10000,
-    #         create_ratio=0.1,
-    #         read_ratio=0.6,
-    #         update_ratio=0.2,
-    #         delete_ratio=0.1,
+    # for _ in range(5):
+    #     result_read_heavy = asyncio.run(
+    #         main(
+    #             num_operations=10000,
+    #             create_ratio=0.1,
+    #             read_ratio=0.6,
+    #             update_ratio=0.2,
+    #             delete_ratio=0.1,
+    #         )
     #     )
-    # )
-    # print("result_read_heavy")
-    # print(result_read_heavy)
-    # print("=" * 50)
-    
+    #     print("result_read_heavy")
+    #     print(result_read_heavy)
+    #     print(
+    #         f"| sqlalchemy1x | result_read_heavy | {_+1} | {result_read_heavy['memory_diff']} | {result_read_heavy['initial_memory']} | {result_read_heavy['final_memory']} | {result_read_heavy['num_operations']} | {result_read_heavy['create_ratio']} | {result_read_heavy['read_ratio']} | {result_read_heavy['update_ratio']} | {result_read_heavy['delete_ratio']} |"
+    #     )
+
     # ================= Update heavy =================
-    # result_update_heavy = asyncio.run(
-    #     main(
-    #         num_operations=10000,
-    #         create_ratio=0.2,
-    #         read_ratio=0.2,
-    #         update_ratio=0.5,
-    #         delete_ratio=0.1,
+    # for _ in range(5):
+    #     result_update_heavy = asyncio.run(
+    #         main(
+    #             num_operations=10000,
+    #             create_ratio=0.2,
+    #             read_ratio=0.2,
+    #             update_ratio=0.5,
+    #             delete_ratio=0.1,
+    #         )
     #     )
-    # )
-    # print("result_update_heavy")
-    # print(result_update_heavy)
-    # print("=" * 50)
-    
+    #     print("result_update_heavy")
+    #     print(result_update_heavy)
+    #     print(
+    #         f"| sqlalchemy1x | update_heavy | {_+1} | {result_update_heavy['memory_diff']} | {result_update_heavy['initial_memory']} | {result_update_heavy['final_memory']} | {result_update_heavy['num_operations']} | {result_update_heavy['create_ratio']} | {result_update_heavy['read_ratio']} | {result_update_heavy['update_ratio']} | {result_update_heavy['delete_ratio']} |"
+    #     )
+
     # ================= Delete heavy =================
-    # result_delete_heavy = asyncio.run(
-    #     main(
-    #         num_operations=10000,
-    #         create_ratio=0.1,
-    #         read_ratio=0.2,
-    #         update_ratio=0.2,
-    #         delete_ratio=0.5,
+
+    # for _ in range(5):
+    #     result_delete_heavy = asyncio.run(
+    #         main(
+    #             num_operations=10000,
+    #             create_ratio=0.1,
+    #             read_ratio=0.2,
+    #             update_ratio=0.2,
+    #             delete_ratio=0.5,
+    #         )
     #     )
-    # )
-    # print("result_delete_heavy")
-    # print(result_delete_heavy)
-    # print("=" * 50)
+    #     print("result_delete_heavy")
+    #     print(result_delete_heavy)
+    #     print(
+    #         f"| sqlalchemy1x | delete_heavy | {_+1} | {result_delete_heavy['memory_diff']} | {result_delete_heavy['initial_memory']} | {result_delete_heavy['final_memory']} | {result_delete_heavy['num_operations']} | {result_delete_heavy['create_ratio']} | {result_delete_heavy['read_ratio']} | {result_delete_heavy['update_ratio']} | {result_delete_heavy['delete_ratio']} |"
+    #     )
