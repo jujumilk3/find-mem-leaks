@@ -121,5 +121,10 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    # Initial memory usage: 37.66 MB.
-    # After 10,000 operations, Final memory usage: 42.79 MB. diff: 5.13 MB
+    # 10,000 operations
+    # Initial memory usage: 37.66 MB
+    # Final memory usage: 42.79 MB. diff: 5.13 MB
+
+    # 100,000 operations
+    # Initial memory usage: 36.64 MB
+    # Final memory usage: 52.46 MB. diff: 15.83 MB
