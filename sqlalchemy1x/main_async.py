@@ -141,28 +141,30 @@ async def perform_random_crud_operations(
                 await session.execute(f"DELETE FROM posts WHERE id = {post_id}")
                 await session.commit()
 
-        if (i + 1) % 1000 == 0:
+        if (i + 1) % 1000 == 0 and DEBUG is True:
             print(f"Completed {i + 1} operations")
 
     end_memory = get_memory_usage()
-    print("\nOperation counts:")
-    for operation, count in operations_count.items():
-        print(f"{operation.capitalize()}: {count} ({count/num_operations*100:.1f}%)")
-
-    print("\nMemory usage:")
-    print(f"Initial: {start_memory:.2f} MB")
-    print(f"Final: {end_memory:.2f} MB")
-    print(f"Difference: {end_memory - start_memory:.2f} MB")
     
+    if DEBUG is True:
+        print("\nOperation counts:")
+        for operation, count in operations_count.items():
+            print(f"{operation.capitalize()}: {count} ({count/num_operations*100:.1f}%)")
+
+        print("\nMemory usage:")
+        print(f"Initial: {start_memory:.2f} MB")
+        print(f"Final: {end_memory:.2f} MB")
+        print(f"Difference: {end_memory - start_memory:.2f} MB")
+
     return {
+        "initial_memory": round(start_memory, 2),
+        "final_memory": round(end_memory, 2),
+        "memory_diff": round(end_memory - start_memory, 2),        
         "num_operations": num_operations,
         "create_ratio": create_ratio,
         "read_ratio": read_ratio,
         "update_ratio": update_ratio,
         "delete_ratio": delete_ratio,
-        "initial_memory": start_memory,
-        "final_memory": end_memory,
-        "memory_diff": end_memory - start_memory,
     }
 
 
@@ -195,17 +197,25 @@ async def main(
 
 
 if __name__ == "__main__":
-    result_10000_operations = asyncio.run(
-        main(
-            num_operations=10000,
-            create_ratio=0.25,
-            read_ratio=0.25,
-            update_ratio=0.25,
-            delete_ratio=0.25,
+    DEBUG = False
+    
+    # ================= 10,000 operations =================
+    
+    for _ in range(10):
+        result_10000_operations = asyncio.run(
+            main(
+                num_operations=10000,
+                create_ratio=0.25,
+                read_ratio=0.25,
+                update_ratio=0.25,
+                delete_ratio=0.25,
+            )
         )
-    )
-    print(result_10000_operations)
-    print("=" * 50)
+        print("**result_10000_operations**")
+        print(result_10000_operations)
+
+    # ================= 100,000 operations =================
+
     # result_100000_operations = asyncio.run(
     #     main(
     #         num_operations=100000,
@@ -215,8 +225,11 @@ if __name__ == "__main__":
     #         delete_ratio=0.25,
     #     )
     # )
+    # print("result_100000_operations")
     # print(result_100000_operations)
     # print("=" * 50)
+    
+    # ================= Create heavy =================
     # result_create_heavy = asyncio.run(
     #     main(
     #         num_operations=10000,
@@ -226,8 +239,11 @@ if __name__ == "__main__":
     #         delete_ratio=0.1,
     #     )
     # )
+    # print("result_create_heavy")
     # print(result_create_heavy)
     # print("=" * 50)
+    
+    # ================= Read heavy =================
     # result_read_heavy = asyncio.run(
     #     main(
     #         num_operations=10000,
@@ -237,8 +253,11 @@ if __name__ == "__main__":
     #         delete_ratio=0.1,
     #     )
     # )
+    # print("result_read_heavy")
     # print(result_read_heavy)
     # print("=" * 50)
+    
+    # ================= Update heavy =================
     # result_update_heavy = asyncio.run(
     #     main(
     #         num_operations=10000,
@@ -248,8 +267,11 @@ if __name__ == "__main__":
     #         delete_ratio=0.1,
     #     )
     # )
+    # print("result_update_heavy")
     # print(result_update_heavy)
     # print("=" * 50)
+    
+    # ================= Delete heavy =================
     # result_delete_heavy = asyncio.run(
     #     main(
     #         num_operations=10000,
@@ -259,5 +281,6 @@ if __name__ == "__main__":
     #         delete_ratio=0.5,
     #     )
     # )
+    # print("result_delete_heavy")
     # print(result_delete_heavy)
     # print("=" * 50)
