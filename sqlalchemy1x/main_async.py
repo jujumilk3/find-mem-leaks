@@ -195,7 +195,7 @@ async def main(
 
 
 if __name__ == "__main__":
-    result1 = asyncio.run(
+    result_10000_operations = asyncio.run(
         main(
             num_operations=10000,
             create_ratio=0.25,
@@ -204,12 +204,55 @@ if __name__ == "__main__":
             delete_ratio=0.25,
         )
     )
-    print(result1)
-
-    # 10,000 operations
-    # Initial memory usage: 37.66 MB
-    # Final memory usage: 42.79 MB. diff: 5.13 MB
-
-    # 100,000 operations
-    # Initial memory usage: 36.64 MB
-    # Final memory usage: 52.46 MB. diff: 15.83 MB
+    result_100000_operations = asyncio.run(
+        main(
+            num_operations=100000,
+            create_ratio=0.25,
+            read_ratio=0.25,
+            update_ratio=0.25,
+            delete_ratio=0.25,
+        )
+    )
+    result_create_heavy = asyncio.run(
+        main(
+            num_operations=10000,
+            create_ratio=0.5,
+            read_ratio=0.2,
+            update_ratio=0.2,
+            delete_ratio=0.1,
+        )
+    )
+    result_read_heavy = asyncio.run(
+        main(
+            num_operations=10000,
+            create_ratio=0.1,
+            read_ratio=0.6,
+            update_ratio=0.2,
+            delete_ratio=0.1,
+        )
+    )
+    result_update_heavy = asyncio.run(
+        main(
+            num_operations=10000,
+            create_ratio=0.2,
+            read_ratio=0.2,
+            update_ratio=0.5,
+            delete_ratio=0.1,
+        )
+    )
+    result_delete_heavy = asyncio.run(
+        main(
+            num_operations=10000,
+            create_ratio=0.1,
+            read_ratio=0.2,
+            update_ratio=0.2,
+            delete_ratio=0.5,
+        )
+    )
+    print(result_10000_operations)
+    print(result_100000_operations)
+    print(result_create_heavy)
+    print(result_read_heavy)
+    print(result_update_heavy)
+    print(result_delete_heavy)
+    
