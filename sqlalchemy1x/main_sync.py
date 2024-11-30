@@ -7,7 +7,6 @@ import asyncio
 import random
 import psutil
 import os
-from typing import List
 
 
 # define models
