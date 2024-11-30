@@ -204,55 +204,60 @@ if __name__ == "__main__":
             delete_ratio=0.25,
         )
     )
-    result_100000_operations = asyncio.run(
-        main(
-            num_operations=100000,
-            create_ratio=0.25,
-            read_ratio=0.25,
-            update_ratio=0.25,
-            delete_ratio=0.25,
-        )
-    )
-    result_create_heavy = asyncio.run(
-        main(
-            num_operations=10000,
-            create_ratio=0.5,
-            read_ratio=0.2,
-            update_ratio=0.2,
-            delete_ratio=0.1,
-        )
-    )
-    result_read_heavy = asyncio.run(
-        main(
-            num_operations=10000,
-            create_ratio=0.1,
-            read_ratio=0.6,
-            update_ratio=0.2,
-            delete_ratio=0.1,
-        )
-    )
-    result_update_heavy = asyncio.run(
-        main(
-            num_operations=10000,
-            create_ratio=0.2,
-            read_ratio=0.2,
-            update_ratio=0.5,
-            delete_ratio=0.1,
-        )
-    )
-    result_delete_heavy = asyncio.run(
-        main(
-            num_operations=10000,
-            create_ratio=0.1,
-            read_ratio=0.2,
-            update_ratio=0.2,
-            delete_ratio=0.5,
-        )
-    )
     print(result_10000_operations)
-    print(result_100000_operations)
-    print(result_create_heavy)
-    print(result_read_heavy)
-    print(result_update_heavy)
-    print(result_delete_heavy)
-    
+    print("=" * 50)
+    # result_100000_operations = asyncio.run(
+    #     main(
+    #         num_operations=100000,
+    #         create_ratio=0.25,
+    #         read_ratio=0.25,
+    #         update_ratio=0.25,
+    #         delete_ratio=0.25,
+    #     )
+    # )
+    # print(result_100000_operations)
+    # print("=" * 50)
+    # result_create_heavy = asyncio.run(
+    #     main(
+    #         num_operations=10000,
+    #         create_ratio=0.5,
+    #         read_ratio=0.2,
+    #         update_ratio=0.2,
+    #         delete_ratio=0.1,
+    #     )
+    # )
+    # print(result_create_heavy)
+    # print("=" * 50)
+    # result_read_heavy = asyncio.run(
+    #     main(
+    #         num_operations=10000,
+    #         create_ratio=0.1,
+    #         read_ratio=0.6,
+    #         update_ratio=0.2,
+    #         delete_ratio=0.1,
+    #     )
+    # )
+    # print(result_read_heavy)
+    # print("=" * 50)
+    # result_update_heavy = asyncio.run(
+    #     main(
+    #         num_operations=10000,
+    #         create_ratio=0.2,
+    #         read_ratio=0.2,
+    #         update_ratio=0.5,
+    #         delete_ratio=0.1,
+    #     )
+    # )
+    # print(result_update_heavy)
+    # print("=" * 50)
+    # result_delete_heavy = asyncio.run(
+    #     main(
+    #         num_operations=10000,
+    #         create_ratio=0.1,
+    #         read_ratio=0.2,
+    #         update_ratio=0.2,
+    #         delete_ratio=0.5,
+    #     )
+    # )
+    # print(result_delete_heavy)
+    # print("=" * 50)
