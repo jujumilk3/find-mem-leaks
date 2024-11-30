@@ -8,10 +8,7 @@
             "path": "intended_with_fastapi/",
         },
         {
-            "path": "sqlalchemy1x_and_async/",
-        },
-        {
-            "path": "sqlalchemy1x_and_sync/"
+            "path": "sqlalchemy1x/",
         }
         
     ],
