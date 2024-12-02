@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
     # ================= 1,000,000 operations =================
 
-    for _ in range(10):
+    for _ in range(5):
         result_1000000_operations = asyncio.run(
             main(
                 num_operations=1000000,
