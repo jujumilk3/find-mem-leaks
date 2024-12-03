@@ -202,21 +202,21 @@ if __name__ == "__main__":
 
     # ================= 100,000 operations =================
 
-    for _ in range(5):
-        result = main(
-            num_operations=100000,
-            create_ratio=0.25,
-            read_ratio=0.25,
-            update_ratio=0.25,
-            delete_ratio=0.25,
-        )
-        print(
-            f"| sqlalchemy1x_sync_session | 100000_operations | check | {_+1} | "
-            f"{result['memory_diff']} | {result['initial_memory']} | "
-            f"{result['final_memory']} | {result['num_operations']} | "
-            f"{result['create_ratio']} | {result['read_ratio']} | "
-            f"{result['update_ratio']} | {result['delete_ratio']} |"
-        )
+    # for _ in range(5):
+    #     result = main(
+    #         num_operations=100000,
+    #         create_ratio=0.25,
+    #         read_ratio=0.25,
+    #         update_ratio=0.25,
+    #         delete_ratio=0.25,
+    #     )
+    #     print(
+    #         f"| sqlalchemy1x_sync_session | 100000_operations | check | {_+1} | "
+    #         f"{result['memory_diff']} | {result['initial_memory']} | "
+    #         f"{result['final_memory']} | {result['num_operations']} | "
+    #         f"{result['create_ratio']} | {result['read_ratio']} | "
+    #         f"{result['update_ratio']} | {result['delete_ratio']} |"
+    #     )
 
     # ================= Create heavy =================
     # for _ in range(5):

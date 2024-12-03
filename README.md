@@ -69,3 +69,9 @@ memray flamegraph {{memray_file_name}}.bin
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 3 | -2.44 | 45.13 | 42.7 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 4 | -1.33 | 43.43 | 42.1 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 5 | 0.07 | 42.68 | 42.75 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 100000_operations | ✅ | 1 | 0.12 | 40.53 | 40.65 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 100000_operations | ✅ | 2 | 10.8 | 41.54 | 52.35 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 100000_operations | ✅ | 3 | -9.18 | 52.51 | 43.33 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 100000_operations | ✅ | 4 | -2.18 | 44.02 | 41.84 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 100000_operations | ✅ | 5 | 0.5 | 42.45 | 42.95 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
