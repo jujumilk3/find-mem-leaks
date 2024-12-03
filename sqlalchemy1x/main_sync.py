@@ -184,39 +184,39 @@ if __name__ == "__main__":
 
     # ================= 10,000 operations =================
 
-    for _ in range(10):
+    # for _ in range(5):
+    #     result = main(
+    #         num_operations=10000,
+    #         create_ratio=0.25,
+    #         read_ratio=0.25,
+    #         update_ratio=0.25,
+    #         delete_ratio=0.25,
+    #     )
+    #     print(
+    #         f"| sqlalchemy1x_sync_session | 10000_operations | check | {_+1} | "
+    #         f"{result['memory_diff']} | {result['initial_memory']} | "
+    #         f"{result['final_memory']} | {result['num_operations']} | "
+    #         f"{result['create_ratio']} | {result['read_ratio']} | "
+    #         f"{result['update_ratio']} | {result['delete_ratio']} |"
+    #     )
+
+    # ================= 100,000 operations =================
+
+    for _ in range(5):
         result = main(
-            num_operations=10000,
+            num_operations=100000,
             create_ratio=0.25,
             read_ratio=0.25,
             update_ratio=0.25,
             delete_ratio=0.25,
         )
         print(
-            f"| sqlalchemy1x_sync_session | 10000_operations | {_+1} | check | "
+            f"| sqlalchemy1x_sync_session | 100000_operations | check | {_+1} | "
             f"{result['memory_diff']} | {result['initial_memory']} | "
             f"{result['final_memory']} | {result['num_operations']} | "
             f"{result['create_ratio']} | {result['read_ratio']} | "
             f"{result['update_ratio']} | {result['delete_ratio']} |"
         )
-
-    # ================= 100,000 operations =================
-
-    # for _ in range(10):
-    #     result_100000_operations = asyncio.run(
-    #         main(
-    #             num_operations=100000,
-    #             create_ratio=0.25,
-    #             read_ratio=0.25,
-    #             update_ratio=0.25,
-    #             delete_ratio=0.25,
-    #         )
-    #     )
-    #     # print("result_100000_operations")
-    #     # print(result_100000_operations)
-    #     print(
-    #         f"| sqlalchemy1x | result_100000_operations | {_+1} | {result_100000_operations['memory_diff']} | {result_100000_operations['initial_memory']} | {result_100000_operations['final_memory']} | {result_100000_operations['num_operations']} | {result_100000_operations['create_ratio']} | {result_100000_operations['read_ratio']} | {result_100000_operations['update_ratio']} | {result_100000_operations['delete_ratio']} |"
-    #     )
 
     # ================= Create heavy =================
     # for _ in range(5):

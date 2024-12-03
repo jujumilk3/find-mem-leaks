@@ -64,3 +64,8 @@ memray flamegraph {{memray_file_name}}.bin
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 3 | 1.72 | 65.46 | 67.18 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 4 | -1.07 | 67.18 | 66.11 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 5 | -2.12 | 66.19 | 64.07 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| sqlalchemy1x_sync_session | 10000_operations | ✅ | 1 | 15.59 | 40.71 | 56.3 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 10000_operations | ✅ | 2 | -11.79 | 56.33 | 44.54 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 10000_operations | ✅ | 3 | -2.44 | 45.13 | 42.7 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 10000_operations | ✅ | 4 | -1.33 | 43.43 | 42.1 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 10000_operations | ✅ | 5 | 0.07 | 42.68 | 42.75 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
