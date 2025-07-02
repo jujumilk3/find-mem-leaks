@@ -27,7 +27,7 @@ memray flamegraph {{memray_file_name}}.bin
 
 ### sqlalchemy1x
 
-| Stack | Method | ✅ | Iter | Diff | Initial | Final | Ops | C | R | U | D |
+| Stack | Method | Status | Round | Diff | Initial | Final | Ops | C | R | U | D |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | sqlalchemy1x_async_session | 10000_operations | ✅ | 1 | 18.73 | 36.84 | 55.57 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_async_session | 10000_operations | ✅ | 2 | 0.5 | 55.63 | 56.13 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
@@ -64,6 +64,7 @@ memray flamegraph {{memray_file_name}}.bin
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 3 | 1.72 | 65.46 | 67.18 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 4 | -1.07 | 67.18 | 66.11 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
 | sqlalchemy1x_async_session | delete_heavy | ✅ | 5 | -2.12 | 66.19 | 64.07 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 1 | 15.59 | 40.71 | 56.3 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 2 | -11.79 | 56.33 | 44.54 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 10000_operations | ✅ | 3 | -2.44 | 45.13 | 42.7 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
@@ -74,4 +75,39 @@ memray flamegraph {{memray_file_name}}.bin
 | sqlalchemy1x_sync_session | 100000_operations | ✅ | 3 | -9.18 | 52.51 | 43.33 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 100000_operations | ✅ | 4 | -2.18 | 44.02 | 41.84 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
 | sqlalchemy1x_sync_session | 100000_operations | ✅ | 5 | 0.5 | 42.45 | 42.95 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 1000000_operations | ✅ | 1 | 12.52 | 43.09 | 55.61 | 1000000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 1000000_operations | ✅ | 2 | -10.98 | 55.8 | 44.81 | 1000000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 1000000_operations | ✅ | 3 | -2.3 | 46.0 | 43.7 | 1000000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 1000000_operations | ✅ | 4 | -2.88 | 46.0 | 43.12 | 1000000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | 1000000_operations | ✅ | 5 | -1.73 | 44.86 | 43.12 | 1000000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_sync_session | create_heavy | ✅ | 1 | 9.73 | 44.88 | 54.61 | 10000 | 0.5 | 0.2 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | create_heavy | ✅ | 2 | -11.48 | 54.69 | 43.2 | 10000 | 0.5 | 0.2 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | create_heavy | ✅ | 3 | 10.89 | 44.81 | 55.7 | 10000 | 0.5 | 0.2 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | create_heavy | ✅ | 4 | -11.73 | 55.78 | 44.05 | 10000 | 0.5 | 0.2 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | create_heavy | ✅ | 5 | 10.27 | 45.69 | 55.95 | 10000 | 0.5 | 0.2 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | read_heavy | ✅ | 1 | -11.86 | 56.03 | 44.17 | 10000 | 0.1 | 0.6 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | read_heavy | ✅ | 2 | -1.73 | 45.83 | 44.09 | 10000 | 0.1 | 0.6 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | read_heavy | ✅ | 3 | -1.84 | 45.72 | 43.88 | 10000 | 0.1 | 0.6 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | read_heavy | ✅ | 4 | -1.7 | 45.53 | 43.83 | 10000 | 0.1 | 0.6 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | read_heavy | ✅ | 5 | -1.52 | 45.52 | 44.0 | 10000 | 0.1 | 0.6 | 0.2 | 0.1 |
+| sqlalchemy1x_sync_session | update_heavy | ✅ | 1 | -1.55 | 45.66 | 44.11 | 10000 | 0.2 | 0.2 | 0.5 | 0.1 |
+| sqlalchemy1x_sync_session | update_heavy | ✅ | 2 | -1.53 | 45.77 | 44.23 | 10000 | 0.2 | 0.2 | 0.5 | 0.1 |
+| sqlalchemy1x_sync_session | update_heavy | ✅ | 3 | -1.8 | 45.88 | 44.08 | 10000 | 0.2 | 0.2 | 0.5 | 0.1 |
+| sqlalchemy1x_sync_session | update_heavy | ✅ | 4 | -1.2 | 45.83 | 44.62 | 10000 | 0.2 | 0.2 | 0.5 | 0.1 |
+| sqlalchemy1x_sync_session | update_heavy | ✅ | 5 | -2.28 | 46.3 | 44.02 | 10000 | 0.2 | 0.2 | 0.5 | 0.1 |
+| sqlalchemy1x_sync_session | delete_heavy | ✅ | 1 | 9.86 | 45.67 | 55.53 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| sqlalchemy1x_sync_session | delete_heavy | ✅ | 2 | -11.11 | 55.61 | 44.5 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| sqlalchemy1x_sync_session | delete_heavy | ✅ | 3 | -1.81 | 46.14 | 44.33 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| sqlalchemy1x_sync_session | delete_heavy | ✅ | 4 | -1.75 | 46.05 | 44.3 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
+| sqlalchemy1x_sync_session | delete_heavy | ✅ | 5 | -4.14 | 45.97 | 41.83 | 10000 | 0.1 | 0.2 | 0.2 | 0.5 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| sqlalchemy1x_async_scoped_session | 10000_operations | ✅ | 1 | -9.81 | 44.36 | 34.55 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 10000_operations | ✅ | 2 | 8.67 | 36.94 | 45.61 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 10000_operations | ✅ | 3 | 1.84 | 45.58 | 47.42 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 10000_operations | ✅ | 4 | 2.25 | 47.39 | 49.64 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 10000_operations | ✅ | 5 | -8.53 | 49.62 | 41.09 | 10000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 100000_operations | ✅ | 1 | 2.22 | 43.36 | 45.58 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 100000_operations | ✅ | 2 | 9.28 | 47.89 | 57.17 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 100000_operations | ✅ | 3 | 0.0 | 57.31 | 57.31 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 100000_operations | ✅ | 4 | -1.09 | 57.47 | 56.38 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
+| sqlalchemy1x_async_scoped_session | 100000_operations | ✅ | 5 | -0.78 | 56.62 | 55.84 | 100000 | 0.25 | 0.25 | 0.25 | 0.25 |
