@@ -2,18 +2,16 @@ import asyncio
 import os
 import random
 import threading
-import time
 
 import aiohttp
 import psutil
-from fastapi import Depends, FastAPI, HTTPException
+import uvicorn
+from fastapi import Depends, FastAPI
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from tqdm import tqdm
-import uvicorn
-
 
 Base = declarative_base()
 
@@ -60,7 +58,7 @@ async def create_post(title: str, body: str, db: AsyncSession = Depends(get_asyn
     await db.commit()
 
     await db.refresh(post)
-    
+
     num_comments = random.randint(1, 3)
     for j in range(num_comments):
         comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
@@ -86,9 +84,7 @@ async def read_posts(db: AsyncSession = Depends(get_async_db)):
 
 @app.put("/posts/{post_id}")
 async def update_post(post_id: int, title: str, body: str, db: AsyncSession = Depends(get_async_db)):
-    await db.execute(
-        f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
-    )
+    await db.execute(f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}")
     await db.commit()
     return {"message": "Post updated", "post_id": post_id}
 
@@ -113,7 +109,7 @@ async def make_async_request(session, operation, base_url, operation_id):
             async with session.post(
                 f"{base_url}/posts/",
                 params={"title": f"Post {operation_id}", "body": f"Body {operation_id}"},
-                timeout=aiohttp.ClientTimeout(total=10)
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
                 return response.status < 500
         elif operation == "read":
@@ -124,12 +120,15 @@ async def make_async_request(session, operation, base_url, operation_id):
             async with session.put(
                 f"{base_url}/posts/{post_id}",
                 params={"title": f"Updated Post {operation_id}", "body": f"Updated Body {operation_id}"},
-                timeout=aiohttp.ClientTimeout(total=10)
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
                 return response.status < 500
         else:  # delete
             post_id = random.randint(1, max(1, operation_id))
-            async with session.delete(f"{base_url}/posts/{post_id}", timeout=aiohttp.ClientTimeout(total=10)) as response:
+            async with session.delete(
+                f"{base_url}/posts/{post_id}",
+                timeout=aiohttp.ClientTimeout(total=10),
+            ) as response:
                 return response.status < 500
     except Exception:
         return False
@@ -179,19 +178,16 @@ async def perform_random_crud_operations(
 
     successful_operations = 0
     connector = aiohttp.TCPConnector(limit=max_concurrent, limit_per_host=max_concurrent)
-    
+
     async with aiohttp.ClientSession(connector=connector) as session:
         semaphore = asyncio.Semaphore(max_concurrent)
-        
+
         async def bounded_request(operation, operation_id):
             async with semaphore:
                 return await make_async_request(session, operation, base_url, operation_id)
-        
-        tasks = [
-            bounded_request(operation, operation_id)
-            for operation, operation_id in operations
-        ]
-        
+
+        tasks = [bounded_request(operation, operation_id) for operation, operation_id in operations]
+
         for completed_task in tqdm(asyncio.as_completed(tasks), total=len(tasks)):
             result = await completed_task
             if result:
@@ -249,15 +245,15 @@ async def main_async(
     delete_ratio=0.1,
 ):
     base_url = "http://127.0.0.1:8011"
-    
+
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
-    
+
     if not await wait_for_server(base_url):
         raise RuntimeError("Failed to start server")
-    
+
     await asyncio.sleep(2)
-    
+
     try:
         result = await perform_random_crud_operations(
             base_url,
@@ -317,7 +313,6 @@ if __name__ == "__main__":
                 f"{result['create_ratio']} | {result['read_ratio']} | "
                 f"{result['update_ratio']} | {result['delete_ratio']} |"
             )
-
 
     # ================= Create heavy =================
     for _ in range(5):
