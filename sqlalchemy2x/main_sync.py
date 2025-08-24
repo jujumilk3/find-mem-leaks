@@ -61,7 +61,8 @@ def perform_random_crud_operations(
     operations_count = {"create": 0, "read": 0, "update": 0, "delete": 0}
 
     start_memory = get_memory_usage()
-    print(f"Initial memory usage: {start_memory:.2f} MB")
+    if DEBUG:
+        print(f"Initial memory usage: {start_memory:.2f} MB")
 
     for i in tqdm(range(num_operations)):
         remaining = num_operations - i
@@ -178,7 +179,7 @@ if __name__ == "__main__":
 
     # ================= 10,000 operations =================
 
-    # for _ in range(5):
+    for _ in range(5):
     #     result = main(
     #         num_operations=10000,
     #         create_ratio=0.25,
@@ -196,7 +197,7 @@ if __name__ == "__main__":
 
     # ================= 100,000 operations =================
 
-    # for _ in range(5):
+    for _ in range(5):
     #     result = main(
     #         num_operations=100000,
     #         create_ratio=0.25,

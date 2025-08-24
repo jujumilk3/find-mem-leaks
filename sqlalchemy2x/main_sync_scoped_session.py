@@ -3,7 +3,7 @@ import random
 
 import psutil
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, select, update, delete
-from sqlalchemy.orm import DeclarativeBase, Session, relationship, sessionmaker, scoped_session
+from sqlalchemy.orm import DeclarativeBase, relationship, sessionmaker, scoped_session
 from tqdm import tqdm
 
 
@@ -62,7 +62,8 @@ def perform_random_crud_operations(
     operations_count = {"create": 0, "read": 0, "update": 0, "delete": 0}
 
     start_memory = get_memory_usage()
-    print(f"Initial memory usage: {start_memory:.2f} MB")
+    if DEBUG:
+        print(f"Initial memory usage: {start_memory:.2f} MB")
 
     for i in tqdm(range(num_operations)):
         remaining = num_operations - i

@@ -63,7 +63,8 @@ async def perform_random_crud_operations(
     operations_count = {"create": 0, "read": 0, "update": 0, "delete": 0}
 
     start_memory = get_memory_usage()
-    print(f"Initial memory usage: {start_memory:.2f} MB")
+    if DEBUG:
+        print(f"Initial memory usage: {start_memory:.2f} MB")
 
     for i in tqdm(range(num_operations)):
         remaining = num_operations - i
@@ -183,7 +184,7 @@ if __name__ == "__main__":
     # ================= 10,000 operations =================
 
     for _ in range(5):
-        result_10000_operations = asyncio.run(
+        result = asyncio.run(
             main(
                 num_operations=10000,
                 create_ratio=0.25,
@@ -192,13 +193,18 @@ if __name__ == "__main__":
                 delete_ratio=0.25,
             )
         )
-        print("**result_10000_operations**")
-        print(result_10000_operations)
+        print(
+            f"| sqlalchemy2x_async_session | 10000_operations | ✅ | {_ + 1} | "
+            f"{result['memory_diff']} | {result['initial_memory']} | "
+            f"{result['final_memory']} | {result['num_operations']} | "
+            f"{result['create_ratio']} | {result['read_ratio']} | "
+            f"{result['update_ratio']} | {result['delete_ratio']} |"
+        )
 
     # ================= 100,000 operations =================
 
     for _ in range(5):
-        result_100000_operations = asyncio.run(
+        result = asyncio.run(
             main(
                 num_operations=100000,
                 create_ratio=0.25,
@@ -207,14 +213,15 @@ if __name__ == "__main__":
                 delete_ratio=0.25,
             )
         )
-        # print("result_100000_operations")
-        # print(result_100000_operations)
         print(
-            f"| sqlalchemy2x | result_100000_operations | {_ + 1} | {result_100000_operations['memory_diff']} | {result_100000_operations['initial_memory']} | {result_100000_operations['final_memory']} | {result_100000_operations['num_operations']} | {result_100000_operations['create_ratio']} | {result_100000_operations['read_ratio']} | {result_100000_operations['update_ratio']} | {result_100000_operations['delete_ratio']} |"
+            f"| sqlalchemy2x_async_session | 100000_operations | ✅ | {_ + 1} | "
+            f"{result['memory_diff']} | {result['initial_memory']} | "
+            f"{result['final_memory']} | {result['num_operations']} | "
+            f"{result['create_ratio']} | {result['read_ratio']} | "
+            f"{result['update_ratio']} | {result['delete_ratio']} |"
         )
 
     # ================= Create heavy =================
-
     for _ in range(5):
         result_create_heavy = asyncio.run(
             main(
@@ -225,14 +232,15 @@ if __name__ == "__main__":
                 delete_ratio=0.1,
             )
         )
-        print("result_create_heavy")
-        print(result_create_heavy)
         print(
-            f"| sqlalchemy2x | result_create_heavy | {_ + 1} | {result_create_heavy['memory_diff']} | {result_create_heavy['initial_memory']} | {result_create_heavy['final_memory']} | {result_create_heavy['num_operations']} | {result_create_heavy['create_ratio']} | {result_create_heavy['read_ratio']} | {result_create_heavy['update_ratio']} | {result_create_heavy['delete_ratio']} |"
+            f"| sqlalchemy2x_async_session | create_heavy | ✅ | {_ + 1} | "
+            f"{result_create_heavy['memory_diff']} | {result_create_heavy['initial_memory']} | "
+            f"{result_create_heavy['final_memory']} | {result_create_heavy['num_operations']} | "
+            f"{result_create_heavy['create_ratio']} | {result_create_heavy['read_ratio']} | "
+            f"{result_create_heavy['update_ratio']} | {result_create_heavy['delete_ratio']} |"
         )
 
     # ================= Read heavy =================
-
     for _ in range(5):
         result_read_heavy = asyncio.run(
             main(
@@ -243,14 +251,15 @@ if __name__ == "__main__":
                 delete_ratio=0.1,
             )
         )
-        print("result_read_heavy")
-        print(result_read_heavy)
         print(
-            f"| sqlalchemy2x | result_read_heavy | {_ + 1} | {result_read_heavy['memory_diff']} | {result_read_heavy['initial_memory']} | {result_read_heavy['final_memory']} | {result_read_heavy['num_operations']} | {result_read_heavy['create_ratio']} | {result_read_heavy['read_ratio']} | {result_read_heavy['update_ratio']} | {result_read_heavy['delete_ratio']} |"
+            f"| sqlalchemy2x_async_session | read_heavy | ✅ | {_ + 1} | "
+            f"{result_read_heavy['memory_diff']} | {result_read_heavy['initial_memory']} | "
+            f"{result_read_heavy['final_memory']} | {result_read_heavy['num_operations']} | "
+            f"{result_read_heavy['create_ratio']} | {result_read_heavy['read_ratio']} | "
+            f"{result_read_heavy['update_ratio']} | {result_read_heavy['delete_ratio']} |"
         )
 
     # ================= Update heavy =================
-
     for _ in range(5):
         result_update_heavy = asyncio.run(
             main(
@@ -261,14 +270,15 @@ if __name__ == "__main__":
                 delete_ratio=0.1,
             )
         )
-        print("result_update_heavy")
-        print(result_update_heavy)
         print(
-            f"| sqlalchemy2x | update_heavy | {_ + 1} | {result_update_heavy['memory_diff']} | {result_update_heavy['initial_memory']} | {result_update_heavy['final_memory']} | {result_update_heavy['num_operations']} | {result_update_heavy['create_ratio']} | {result_update_heavy['read_ratio']} | {result_update_heavy['update_ratio']} | {result_update_heavy['delete_ratio']} |"
+            f"| sqlalchemy2x_async_session | update_heavy | ✅ | {_ + 1} | "
+            f"{result_update_heavy['memory_diff']} | {result_update_heavy['initial_memory']} | "
+            f"{result_update_heavy['final_memory']} | {result_update_heavy['num_operations']} | "
+            f"{result_update_heavy['create_ratio']} | {result_update_heavy['read_ratio']} | "
+            f"{result_update_heavy['update_ratio']} | {result_update_heavy['delete_ratio']} |"
         )
 
     # ================= Delete heavy =================
-
     for _ in range(5):
         result_delete_heavy = asyncio.run(
             main(
@@ -279,8 +289,10 @@ if __name__ == "__main__":
                 delete_ratio=0.5,
             )
         )
-        print("result_delete_heavy")
-        print(result_delete_heavy)
         print(
-            f"| sqlalchemy2x | delete_heavy | {_ + 1} | {result_delete_heavy['memory_diff']} | {result_delete_heavy['initial_memory']} | {result_delete_heavy['final_memory']} | {result_delete_heavy['num_operations']} | {result_delete_heavy['create_ratio']} | {result_delete_heavy['read_ratio']} | {result_delete_heavy['update_ratio']} | {result_delete_heavy['delete_ratio']} |"
+            f"| sqlalchemy2x_async_session | delete_heavy | ✅ | {_ + 1} | "
+            f"{result_delete_heavy['memory_diff']} | {result_delete_heavy['initial_memory']} | "
+            f"{result_delete_heavy['final_memory']} | {result_delete_heavy['num_operations']} | "
+            f"{result_delete_heavy['create_ratio']} | {result_delete_heavy['read_ratio']} | "
+            f"{result_delete_heavy['update_ratio']} | {result_delete_heavy['delete_ratio']} |"
         )

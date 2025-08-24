@@ -64,7 +64,8 @@ async def perform_random_crud_operations(
     operations_count = {"create": 0, "read": 0, "update": 0, "delete": 0}
 
     start_memory = get_memory_usage()
-    print(f"Initial memory usage: {start_memory:.2f} MB")
+    if DEBUG:
+        print(f"Initial memory usage: {start_memory:.2f} MB")
 
     for i in tqdm(range(num_operations)):
         remaining = num_operations - i
