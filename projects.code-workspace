@@ -5,13 +5,10 @@
             "name": "root"
         },
         {
-            "path": "intended_with_fastapi/",
+            "path": "sqlalchemy1x/"
         },
         {
-            "path": "sqlalchemy1x/",
-        },
-        {
-            "path": "sqlalchemy2x/",
+            "path": "sqlalchemy2x/"
         }
     ],
 }
