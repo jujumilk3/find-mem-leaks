@@ -97,10 +97,10 @@ async def perform_random_crud_operations(
                 post = Post(title=f"Post {i}", body=f"Body {i}")
                 session.add(post)
                 await session.commit()
-                
+
                 # Refresh to ensure we have the id
                 await session.refresh(post)
-                
+
                 num_comments = random.randint(1, 3)
                 for j in range(num_comments):
                     comment = Comment(post_id=post.id, body=f"Comment {j} for Post {i}")
