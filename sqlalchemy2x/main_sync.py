@@ -2,7 +2,7 @@ import os
 import random
 
 import psutil
-from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, select, update, delete
+from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, delete, select, update
 from sqlalchemy.orm import DeclarativeBase, Session, relationship, sessionmaker
 from tqdm import tqdm
 
@@ -110,8 +110,8 @@ def perform_random_crud_operations(
             count_result = session.scalar(select(Post.id).order_by(Post.id.desc()).limit(1))
             if count_result:
                 post_id = random.randint(1, max(1, count_result))
-                stmt = update(Post).where(Post.id == post_id).values(
-                    title=f'Updated Post {i}', body=f'Updated Body {i}'
+                stmt = (
+                    update(Post).where(Post.id == post_id).values(title=f"Updated Post {i}", body=f"Updated Body {i}")
                 )
                 session.execute(stmt)
                 session.commit()
@@ -180,51 +180,33 @@ if __name__ == "__main__":
     # ================= 10,000 operations =================
 
     for _ in range(5):
-    #     result = main(
-    #         num_operations=10000,
-    #         create_ratio=0.25,
-    #         read_ratio=0.25,
-    #         update_ratio=0.25,
-    #         delete_ratio=0.25,
-    #     )
-    #     print(
-    #         f"| sqlalchemy2x_sync_session | 10000_operations | check | {_+1} | "
-    #         f"{result['memory_diff']} | {result['initial_memory']} | "
-    #         f"{result['final_memory']} | {result['num_operations']} | "
-    #         f"{result['create_ratio']} | {result['read_ratio']} | "
-    #         f"{result['update_ratio']} | {result['delete_ratio']} |"
-    #     )
-
-    # ================= 100,000 operations =================
-
-    for _ in range(5):
-    #     result = main(
-    #         num_operations=100000,
-    #         create_ratio=0.25,
-    #         read_ratio=0.25,
-    #         update_ratio=0.25,
-    #         delete_ratio=0.25,
-    #     )
-    #     print(
-    #         f"| sqlalchemy2x_sync_session | 100000_operations | check | {_+1} | "
-    #         f"{result['memory_diff']} | {result['initial_memory']} | "
-    #         f"{result['final_memory']} | {result['num_operations']} | "
-    #         f"{result['create_ratio']} | {result['read_ratio']} | "
-    #         f"{result['update_ratio']} | {result['delete_ratio']} |"
-    #     )
-
-    # ================= 1,000,000 operations =================
-
-    for _ in range(5):
         result = main(
-            num_operations=1000000,
+            num_operations=10000,
             create_ratio=0.25,
             read_ratio=0.25,
             update_ratio=0.25,
             delete_ratio=0.25,
         )
         print(
-            f"| sqlalchemy2x_sync_session | 1000000_operations | ✅ | {_ + 1} | "
+            f"| sqlalchemy2x_sync_session | 10000_operations | ✅ | {_ + 1} | "
+            f"{result['memory_diff']} | {result['initial_memory']} | "
+            f"{result['final_memory']} | {result['num_operations']} | "
+            f"{result['create_ratio']} | {result['read_ratio']} | "
+            f"{result['update_ratio']} | {result['delete_ratio']} |"
+        )
+
+    # ================= 100,000 operations =================
+
+    for _ in range(5):
+        result = main(
+            num_operations=100000,
+            create_ratio=0.25,
+            read_ratio=0.25,
+            update_ratio=0.25,
+            delete_ratio=0.25,
+        )
+        print(
+            f"| sqlalchemy2x_sync_session | 100000_operations | ✅ | {_ + 1} | "
             f"{result['memory_diff']} | {result['initial_memory']} | "
             f"{result['final_memory']} | {result['num_operations']} | "
             f"{result['create_ratio']} | {result['read_ratio']} | "
