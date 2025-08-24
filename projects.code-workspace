@@ -9,6 +9,12 @@
         },
         {
             "path": "sqlalchemy2x/"
+        },
+        {
+            "path": "sqlalchemy1x_fastapi"
+        },
+        {
+            "path": "sqlalchemy2x_fastapi"
         }
     ],
 }
