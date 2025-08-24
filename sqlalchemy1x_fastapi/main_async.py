@@ -53,47 +53,62 @@ async def create_tables():
 
 @app.post("/posts/")
 async def create_post(title: str, body: str, db: AsyncSession = Depends(get_async_db)):
-    post = Post(title=title, body=body)
-    db.add(post)
-    await db.commit()
+    try:
+        post = Post(title=title, body=body)
+        db.add(post)
+        await db.commit()
 
-    await db.refresh(post)
+        await db.refresh(post)
 
-    num_comments = random.randint(1, 3)
-    for j in range(num_comments):
-        comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
-        db.add(comment)
-    await db.commit()
-    return {"post_id": post.id, "comments_created": num_comments}
+        num_comments = random.randint(1, 3)
+        for j in range(num_comments):
+            comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
+            db.add(comment)
+        await db.commit()
+        return {"post_id": post.id, "comments_created": num_comments}
+    except Exception as e:
+        await db.rollback()
+        return {"error": "Database operation failed", "post_id": -1, "comments_created": 0}
 
 
 @app.get("/posts/")
 async def read_posts(db: AsyncSession = Depends(get_async_db)):
-    result = await db.execute("SELECT COUNT(*) FROM posts")
-    count = result.scalar()
-    if count > 0:
-        post_id = random.randint(1, max(1, count))
-        result = await db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
-        post = result.first()
-        if post:
-            comments_result = await db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
-            comments = comments_result.fetchall()
-            return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
-    return {"message": "No posts found"}
+    try:
+        result = await db.execute("SELECT COUNT(*) FROM posts")
+        count = result.scalar()
+        if count > 0:
+            post_id = random.randint(1, max(1, count))
+            result = await db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
+            post = result.first()
+            if post:
+                comments_result = await db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
+                comments = comments_result.fetchall()
+                return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
+        return {"message": "No posts found"}
+    except Exception as e:
+        return {"error": "Database read failed", "message": "No posts found"}
 
 
 @app.put("/posts/{post_id}")
 async def update_post(post_id: int, title: str, body: str, db: AsyncSession = Depends(get_async_db)):
-    await db.execute(f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}")
-    await db.commit()
-    return {"message": "Post updated", "post_id": post_id}
+    try:
+        await db.execute(f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}")
+        await db.commit()
+        return {"message": "Post updated", "post_id": post_id}
+    except Exception as e:
+        await db.rollback()
+        return {"error": "Database update failed", "post_id": post_id}
 
 
 @app.delete("/posts/{post_id}")
 async def delete_post(post_id: int, db: AsyncSession = Depends(get_async_db)):
-    await db.execute(f"DELETE FROM posts WHERE id = {post_id}")
-    await db.commit()
-    return {"message": "Post deleted", "post_id": post_id}
+    try:
+        await db.execute(f"DELETE FROM posts WHERE id = {post_id}")
+        await db.commit()
+        return {"message": "Post deleted", "post_id": post_id}
+    except Exception as e:
+        await db.rollback()
+        return {"error": "Database delete failed", "post_id": post_id}
 
 
 def get_memory_usage():
@@ -130,7 +145,8 @@ async def make_async_request(session, operation, base_url, operation_id):
                 timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
                 return response.status < 500
-    except Exception:
+    except Exception as e:
+        # Silently handle HTTP/DB errors to avoid verbose logging
         return False
 
 
