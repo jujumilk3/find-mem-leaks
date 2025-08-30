@@ -45,7 +45,7 @@ class Database:
         self._async_scoped_session = async_scoped_session(async_session_factory, scopefunc=asyncio.current_task)
 
     async def create_database(self) -> None:
-        sync_engine = create_engine("sqlite:///fastapi_async_scoped_di_1x.db")
+        sync_engine = create_engine("sqlite:///fastapi_async_scoped_di_1x.db", connect_args={"check_same_thread": False})
         Base.metadata.create_all(sync_engine)
 
     @property
@@ -85,48 +85,63 @@ def create_app() -> FastAPI:
     @app.post("/posts/")
     @inject
     async def create_post(title: str, body: str, db=Depends(get_async_scoped_db)):
-        post = Post(title=title, body=body)
-        db.add(post)
-        await db.commit()
-        await db.refresh(post)
-        
-        num_comments = random.randint(1, 3)
-        for j in range(num_comments):
-            comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
-            db.add(comment)
-        await db.commit()
-        return {"post_id": post.id, "comments_created": num_comments}
+        try:
+            post = Post(title=title, body=body)
+            db.add(post)
+            await db.commit()
+            await db.refresh(post)
+            
+            num_comments = random.randint(1, 3)
+            for j in range(num_comments):
+                comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
+                db.add(comment)
+            await db.commit()
+            return {"post_id": post.id, "comments_created": num_comments}
+        except Exception as e:
+            await db.rollback()
+            return {"error": "Database operation failed", "post_id": -1, "comments_created": 0}
 
     @app.get("/posts/")
     @inject
     async def read_posts(db=Depends(get_async_scoped_db)):
-        result = await db.execute("SELECT COUNT(*) FROM posts")
-        count = result.scalar()
-        if count > 0:
-            post_id = random.randint(1, max(1, count))
-            result = await db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
-            post = result.first()
-            if post:
-                comments_result = await db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
-                comments = comments_result.fetchall()
-                return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
-        return {"message": "No posts found"}
+        try:
+            result = await db.execute("SELECT COUNT(*) FROM posts")
+            count = result.scalar()
+            if count > 0:
+                post_id = random.randint(1, max(1, count))
+                result = await db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
+                post = result.first()
+                if post:
+                    comments_result = await db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
+                    comments = comments_result.fetchall()
+                    return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
+            return {"message": "No posts found"}
+        except Exception as e:
+            return {"error": "Database read failed", "message": "No posts found"}
 
     @app.put("/posts/{post_id}")
     @inject
     async def update_post(post_id: int, title: str, body: str, db=Depends(get_async_scoped_db)):
-        await db.execute(
-            f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
-        )
-        await db.commit()
-        return {"message": "Post updated", "post_id": post_id}
+        try:
+            await db.execute(
+                f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
+            )
+            await db.commit()
+            return {"message": "Post updated", "post_id": post_id}
+        except Exception as e:
+            await db.rollback()
+            return {"error": "Database update failed", "post_id": post_id}
 
     @app.delete("/posts/{post_id}")
     @inject
     async def delete_post(post_id: int, db=Depends(get_async_scoped_db)):
-        await db.execute(f"DELETE FROM posts WHERE id = {post_id}")
-        await db.commit()
-        return {"message": "Post deleted", "post_id": post_id}
+        try:
+            await db.execute(f"DELETE FROM posts WHERE id = {post_id}")
+            await db.commit()
+            return {"message": "Post deleted", "post_id": post_id}
+        except Exception as e:
+            await db.rollback()
+            return {"error": "Database delete failed", "post_id": post_id}
 
     @app.on_event("shutdown")
     async def cleanup():

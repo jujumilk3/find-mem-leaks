@@ -8,13 +8,19 @@
             "path": "sqlalchemy1x/"
         },
         {
+            "path": "sqlalchemy1x_fastapi/"
+        },
+        {
+            "path": "sqlalchemy1x_fastapi_dependency_injector/"
+        },
+        {
             "path": "sqlalchemy2x/"
         },
         {
-            "path": "sqlalchemy1x_fastapi"
+            "path": "sqlalchemy2x_fastapi"
         },
         {
-            "path": "sqlalchemy2x_fastapi"
+            "path": "sqlalchemy2x_fastapi_dependency_injector"
         }
     ],
 }

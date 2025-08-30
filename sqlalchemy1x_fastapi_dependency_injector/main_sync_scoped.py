@@ -39,7 +39,7 @@ class Comment(Base):
 
 class Database:
     def __init__(self, db_url: str) -> None:
-        self._engine = create_engine(db_url, echo=False, pool_pre_ping=True)
+        self._engine = create_engine(db_url, echo=False, pool_pre_ping=True, connect_args={"check_same_thread": False})
         Base.metadata.create_all(self._engine)
         session_factory = sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
         self._scoped_session = scoped_session(session_factory)
@@ -80,52 +80,63 @@ def create_app() -> FastAPI:
     @app.post("/posts/")
     @inject
     def create_post(title: str, body: str, db=Depends(get_scoped_db)):
-        post = Post(title=title, body=body)
-        db.add(post)
-        db.commit()
-        db.refresh(post)
-        
-        num_comments = random.randint(1, 3)
-        for j in range(num_comments):
-            comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
-            db.add(comment)
-        db.commit()
-        return {"post_id": post.id, "comments_created": num_comments}
+        try:
+            post = Post(title=title, body=body)
+            db.add(post)
+            db.commit()
+            db.refresh(post)
+            
+            num_comments = random.randint(1, 3)
+            for j in range(num_comments):
+                comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
+                db.add(comment)
+            db.commit()
+            return {"post_id": post.id, "comments_created": num_comments}
+        except Exception as e:
+            db.rollback()
+            return {"error": "Database operation failed", "post_id": -1, "comments_created": 0}
 
     @app.get("/posts/")
     @inject
     def read_posts(db=Depends(get_scoped_db)):
-        result = db.execute("SELECT COUNT(*) FROM posts")
-        count = result.scalar()
-        if count > 0:
-            post_id = random.randint(1, max(1, count))
-            result = db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
-            post = result.first()
-            if post:
-                comments_result = db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
-                comments = comments_result.fetchall()
-                return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
-        return {"message": "No posts found"}
+        try:
+            result = db.execute("SELECT COUNT(*) FROM posts")
+            count = result.scalar()
+            if count > 0:
+                post_id = random.randint(1, max(1, count))
+                result = db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
+                post = result.first()
+                if post:
+                    comments_result = db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
+                    comments = comments_result.fetchall()
+                    return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
+            return {"message": "No posts found"}
+        except Exception as e:
+            return {"error": "Database read failed", "message": "No posts found"}
 
     @app.put("/posts/{post_id}")
     @inject
     def update_post(post_id: int, title: str, body: str, db=Depends(get_scoped_db)):
-        result = db.execute(
-            f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
-        )
-        db.commit()
-        if result.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Post not found")
-        return {"message": "Post updated", "post_id": post_id}
+        try:
+            result = db.execute(
+                f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
+            )
+            db.commit()
+            return {"message": "Post updated", "post_id": post_id}
+        except Exception as e:
+            db.rollback()
+            return {"error": "Database update failed", "post_id": post_id}
 
     @app.delete("/posts/{post_id}")
     @inject
     def delete_post(post_id: int, db=Depends(get_scoped_db)):
-        result = db.execute(f"DELETE FROM posts WHERE id = {post_id}")
-        db.commit()
-        if result.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Post not found")
-        return {"message": "Post deleted", "post_id": post_id}
+        try:
+            result = db.execute(f"DELETE FROM posts WHERE id = {post_id}")
+            db.commit()
+            return {"message": "Post deleted", "post_id": post_id}
+        except Exception as e:
+            db.rollback()
+            return {"error": "Database delete failed", "post_id": post_id}
 
     @app.on_event("shutdown")
     def cleanup():

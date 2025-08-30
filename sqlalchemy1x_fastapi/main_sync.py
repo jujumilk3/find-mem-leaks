@@ -6,13 +6,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import psutil
 import requests
-from fastapi import Depends, FastAPI, HTTPException
+import uvicorn
+from fastapi import Depends, FastAPI
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship, sessionmaker
 from tqdm import tqdm
-import uvicorn
-
 
 Base = declarative_base()
 
@@ -35,7 +34,12 @@ class Comment(Base):
     post = relationship("Post", back_populates="comments")
 
 
-engine = create_engine("sqlite:///fastapi_sync_1x.db", echo=False, pool_pre_ping=True)
+engine = create_engine(
+    "sqlite:///fastapi_sync_1x.db", 
+    echo=False, 
+    pool_pre_ping=True,
+    connect_args={"check_same_thread": False}
+)
 Base.metadata.create_all(engine)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -52,52 +56,61 @@ def get_db():
 
 @app.post("/posts/")
 def create_post(title: str, body: str, db: Session = Depends(get_db)):
-    post = Post(title=title, body=body)
-    db.add(post)
-    db.commit()
-    db.refresh(post)
-    
-    num_comments = random.randint(1, 3)
-    for j in range(num_comments):
-        comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
-        db.add(comment)
-    db.commit()
-    return {"post_id": post.id, "comments_created": num_comments}
+    try:
+        post = Post(title=title, body=body)
+        db.add(post)
+        db.commit()
+        db.refresh(post)
+
+        num_comments = random.randint(1, 3)
+        for j in range(num_comments):
+            comment = Comment(post_id=post.id, body=f"Comment {j} for {title}")
+            db.add(comment)
+        db.commit()
+        return {"post_id": post.id, "comments_created": num_comments}
+    except Exception as e:
+        db.rollback()
+        return {"error": "Database operation failed", "post_id": -1, "comments_created": 0}
 
 
 @app.get("/posts/")
 def read_posts(db: Session = Depends(get_db)):
-    result = db.execute("SELECT COUNT(*) FROM posts")
-    count = result.scalar()
-    if count > 0:
-        post_id = random.randint(1, max(1, count))
-        result = db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
-        post = result.first()
-        if post:
-            comments_result = db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
-            comments = comments_result.fetchall()
-            return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
-    return {"message": "No posts found"}
+    try:
+        result = db.execute("SELECT COUNT(*) FROM posts")
+        count = result.scalar()
+        if count > 0:
+            post_id = random.randint(1, max(1, count))
+            result = db.execute(f"SELECT * FROM posts WHERE id = {post_id}")
+            post = result.first()
+            if post:
+                comments_result = db.execute(f"SELECT * FROM comments WHERE post_id = {post_id}")
+                comments = comments_result.fetchall()
+                return {"post_id": post.id, "title": post.title, "comments_count": len(comments)}
+        return {"message": "No posts found"}
+    except Exception as e:
+        return {"error": "Database read failed", "message": "No posts found"}
 
 
 @app.put("/posts/{post_id}")
 def update_post(post_id: int, title: str, body: str, db: Session = Depends(get_db)):
-    result = db.execute(
-        f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}"
-    )
-    db.commit()
-    if result.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Post not found")
-    return {"message": "Post updated", "post_id": post_id}
+    try:
+        result = db.execute(f"UPDATE posts SET title = '{title}', body = '{body}' WHERE id = {post_id}")
+        db.commit()
+        return {"message": "Post updated", "post_id": post_id}
+    except Exception as e:
+        db.rollback()
+        return {"error": "Database update failed", "post_id": post_id}
 
 
 @app.delete("/posts/{post_id}")
 def delete_post(post_id: int, db: Session = Depends(get_db)):
-    result = db.execute(f"DELETE FROM posts WHERE id = {post_id}")
-    db.commit()
-    if result.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Post not found")
-    return {"message": "Post deleted", "post_id": post_id}
+    try:
+        result = db.execute(f"DELETE FROM posts WHERE id = {post_id}")
+        db.commit()
+        return {"message": "Post deleted", "post_id": post_id}
+    except Exception as e:
+        db.rollback()
+        return {"error": "Database delete failed", "post_id": post_id}
 
 
 def get_memory_usage():
@@ -113,7 +126,7 @@ def make_request(operation, base_url, operation_id):
             response = requests.post(
                 f"{base_url}/posts/",
                 params={"title": f"Post {operation_id}", "body": f"Body {operation_id}"},
-                timeout=10
+                timeout=10,
             )
         elif operation == "read":
             response = requests.get(f"{base_url}/posts/", timeout=10)
@@ -122,12 +135,12 @@ def make_request(operation, base_url, operation_id):
             response = requests.put(
                 f"{base_url}/posts/{post_id}",
                 params={"title": f"Updated Post {operation_id}", "body": f"Updated Body {operation_id}"},
-                timeout=10
+                timeout=10,
             )
         else:  # delete
             post_id = random.randint(1, max(1, operation_id))
             response = requests.delete(f"{base_url}/posts/{post_id}", timeout=10)
-        
+
         return response.status_code < 500
     except Exception:
         return False
@@ -178,10 +191,9 @@ def perform_random_crud_operations(
     successful_operations = 0
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [
-            executor.submit(make_request, operation, base_url, operation_id)
-            for operation, operation_id in operations
+            executor.submit(make_request, operation, base_url, operation_id) for operation, operation_id in operations
         ]
-        
+
         for future in tqdm(as_completed(futures), total=len(futures)):
             if future.result():
                 successful_operations += 1
@@ -237,15 +249,15 @@ def main(
     delete_ratio=0.1,
 ):
     base_url = "http://127.0.0.1:8010"
-    
+
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
-    
+
     if not wait_for_server(base_url):
         raise RuntimeError("Failed to start server")
-    
+
     time.sleep(2)
-    
+
     try:
         result = perform_random_crud_operations(
             base_url,
@@ -301,7 +313,6 @@ if __name__ == "__main__":
                 f"{result['create_ratio']} | {result['read_ratio']} | "
                 f"{result['update_ratio']} | {result['delete_ratio']} |"
             )
-
 
     # ================= Create heavy =================
     for _ in range(5):

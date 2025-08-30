@@ -47,7 +47,7 @@ async def get_async_db():
 
 @app.on_event("startup")
 async def create_tables():
-    sync_engine = create_engine("sqlite:///fastapi_async_1x.db")
+    sync_engine = create_engine("sqlite:///fastapi_async_1x.db", connect_args={"check_same_thread": False})
     Base.metadata.create_all(sync_engine)
 
 
