@@ -53,7 +53,7 @@ def get_scoped_db():
     try:
         yield db
     finally:
-        db.close()
+        ScopedSession.remove()
 
 
 @app.post("/posts/")

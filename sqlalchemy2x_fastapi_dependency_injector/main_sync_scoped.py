@@ -63,8 +63,11 @@ class Container(containers.DeclarativeContainer):
 
 
 def get_scoped_db(database: Database = Depends(Provide[Container.database])):
-    with database.scoped_session() as db:
+    db = database.scoped_session()
+    try:
         yield db
+    finally:
+        database.scoped_session.remove()
 
 
 def create_app() -> FastAPI:

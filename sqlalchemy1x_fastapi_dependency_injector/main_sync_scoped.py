@@ -67,7 +67,7 @@ def get_scoped_db(database: Database = Depends(Provide[Container.database])):
     try:
         yield db
     finally:
-        db.close()
+        database.scoped_session.remove()
 
 
 def create_app() -> FastAPI:
