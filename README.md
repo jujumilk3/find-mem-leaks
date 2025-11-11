@@ -1,8 +1,85 @@
 # find-mem-leaks
 
-Test project to find mem leaks from various python packages and archs.
+Test project to find memory leaks from various Python packages and architectures.
 
-## Commands
+## 🚀 Quick Start
+
+### Automated Benchmark Runner (New!)
+
+Run comprehensive benchmarks with various CRUD operation combinations:
+
+```bash
+# Quick test (3 minutes)
+./run_scenario.sh --quick
+
+# Specific scenario
+./run_scenario.sh --scenario sqlalchemy1x --config balanced --scale small
+
+# All scenarios
+./run_scenario.sh --all
+```
+
+See [BENCHMARK_GUIDE.md](BENCHMARK_GUIDE.md) for detailed documentation.
+
+### Python Script
+
+```bash
+# Install dependencies for a scenario
+cd sqlalchemy1x
+pip install -r requirements.txt
+cd ..
+
+# Run with custom parameters
+python3 run_benchmarks.py \
+  --scenarios sqlalchemy1x sqlalchemy2x \
+  --configs balanced read_heavy write_intensive \
+  --scales small medium \
+  --rounds 5
+```
+
+### Individual Scenario Testing
+
+```bash
+cd {{project_name}}  # e.g. sqlalchemy1x
+python3 main_async.py
+```
+
+## 📊 Available Test Scenarios
+
+### Technology Stacks
+- **sqlalchemy1x**: SQLAlchemy 1.4.54 (standalone)
+- **sqlalchemy1x_fastapi**: SQLAlchemy 1.4.54 + FastAPI
+- **sqlalchemy1x_fastapi_dependency_injector**: SQLAlchemy 1.4.54 + FastAPI + DI
+- **sqlalchemy2x**: SQLAlchemy 2.x (standalone)
+- **sqlalchemy2x_fastapi**: SQLAlchemy 2.x + FastAPI
+- **sqlalchemy2x_fastapi_dependency_injector**: SQLAlchemy 2.x + FastAPI + DI
+
+### Session Patterns (per scenario)
+- Async sessions
+- Async scoped sessions
+- Sync sessions
+- Sync scoped sessions
+
+### CRUD Workload Patterns
+- **balanced**: 25% each operation
+- **create_heavy**: 50% creates
+- **read_heavy**: 60% reads
+- **update_heavy**: 50% updates
+- **delete_heavy**: 50% deletes
+- **write_intensive**: 80% writes (create + update)
+- **read_only**: 85% reads
+- **mixed_workload**: Typical production pattern
+- And 4 more specialized patterns...
+
+### Operation Scales
+- **tiny**: 1K operations (debug)
+- **small**: 10K operations (quick test)
+- **medium**: 100K operations (standard)
+- **large**: 1M operations (stress test)
+
+**Total Combinations**: 6 scenarios × 4 session patterns × 12 CRUD configs × 4 scales = **1,152 unique tests**
+
+## 🔍 Using Memray
 
 Install memray
 
@@ -10,7 +87,7 @@ Install memray
 pip install memray
 ```
 
-Run each projects by using memray
+Run each project using memray
 
 ```bash
 cd {{project_name}}  # e.g intended_with_fastapi

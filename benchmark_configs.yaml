@@ -1,0 +1,228 @@
+# Comprehensive benchmark configurations
+# This file defines various CRUD ratio combinations and operation scales for memory leak testing
+
+# CRUD Ratio Configurations
+crud_ratios:
+  # Balanced workload
+  balanced:
+    name: "Balanced Operations"
+    create: 0.25
+    read: 0.25
+    update: 0.25
+    delete: 0.25
+    description: "Equal distribution of all CRUD operations"
+
+  # Heavy workloads
+  create_heavy:
+    name: "Create Heavy"
+    create: 0.5
+    read: 0.2
+    update: 0.2
+    delete: 0.1
+    description: "50% creates - tests memory allocation patterns"
+
+  read_heavy:
+    name: "Read Heavy"
+    create: 0.1
+    read: 0.6
+    update: 0.2
+    delete: 0.1
+    description: "60% reads - tests query caching and result handling"
+
+  update_heavy:
+    name: "Update Heavy"
+    create: 0.2
+    read: 0.2
+    update: 0.5
+    delete: 0.1
+    description: "50% updates - tests modification tracking"
+
+  delete_heavy:
+    name: "Delete Heavy"
+    create: 0.1
+    read: 0.2
+    update: 0.2
+    delete: 0.5
+    description: "50% deletes - tests cleanup mechanisms"
+
+  # Specialized workloads
+  write_intensive:
+    name: "Write Intensive"
+    create: 0.4
+    read: 0.1
+    update: 0.4
+    delete: 0.1
+    description: "80% writes (create + update) - high transaction load"
+
+  read_only:
+    name: "Read Only"
+    create: 0.05
+    read: 0.85
+    update: 0.05
+    delete: 0.05
+    description: "85% reads - minimal writes, tests read-heavy scenarios"
+
+  mixed_workload:
+    name: "Mixed Workload"
+    create: 0.3
+    read: 0.4
+    update: 0.2
+    delete: 0.1
+    description: "Typical production workload pattern"
+
+  # Extreme cases
+  create_only:
+    name: "Create Only"
+    create: 0.9
+    read: 0.05
+    update: 0.03
+    delete: 0.02
+    description: "90% creates - extreme allocation test"
+
+  transaction_heavy:
+    name: "Transaction Heavy"
+    create: 0.35
+    read: 0.15
+    update: 0.35
+    delete: 0.15
+    description: "70% writes with balanced creates/updates"
+
+  crud_cycle:
+    name: "CRUD Cycle"
+    create: 0.3
+    read: 0.3
+    update: 0.25
+    delete: 0.15
+    description: "Full lifecycle testing"
+
+  moderate_read:
+    name: "Moderate Read"
+    create: 0.2
+    read: 0.5
+    update: 0.2
+    delete: 0.1
+    description: "50% reads - moderate read bias"
+
+# Operation Scales
+operation_scales:
+  small:
+    operations: 10000
+    description: "Quick test - 10K operations"
+
+  medium:
+    operations: 100000
+    description: "Standard test - 100K operations"
+
+  large:
+    operations: 1000000
+    description: "Stress test - 1M operations"
+
+  tiny:
+    operations: 1000
+    description: "Debug test - 1K operations"
+
+# Scenarios
+scenarios:
+  sqlalchemy1x:
+    name: "SQLAlchemy 1.4.54 Standalone"
+    description: "Pure SQLAlchemy 1.x without framework"
+    scripts:
+      - main_async.py
+      - main_async_scoped_session.py
+      - main_sync.py
+      - main_sync_scoped_session.py
+
+  sqlalchemy1x_fastapi:
+    name: "SQLAlchemy 1.4.54 + FastAPI"
+    description: "SQLAlchemy 1.x with FastAPI framework"
+    scripts:
+      - main_async.py
+      - main_async_scoped.py
+      - main_sync.py
+      - main_sync_scoped.py
+
+  sqlalchemy1x_fastapi_dependency_injector:
+    name: "SQLAlchemy 1.4.54 + FastAPI + DI"
+    description: "SQLAlchemy 1.x with FastAPI and Dependency Injector"
+    scripts:
+      - main_async.py
+      - main_async_scoped.py
+      - main_sync.py
+      - main_sync_scoped.py
+
+  sqlalchemy2x:
+    name: "SQLAlchemy 2.x Standalone"
+    description: "Pure SQLAlchemy 2.x without framework"
+    scripts:
+      - main_async.py
+      - main_async_scoped_session.py
+      - main_sync.py
+      - main_sync_scoped_session.py
+
+  sqlalchemy2x_fastapi:
+    name: "SQLAlchemy 2.x + FastAPI"
+    description: "SQLAlchemy 2.x with FastAPI framework"
+    scripts:
+      - main_async.py
+      - main_async_scoped.py
+      - main_sync.py
+      - main_sync_scoped.py
+
+  sqlalchemy2x_fastapi_dependency_injector:
+    name: "SQLAlchemy 2.x + FastAPI + DI"
+    description: "SQLAlchemy 2.x with FastAPI and Dependency Injector"
+    scripts:
+      - main_async.py
+      - main_async_scoped.py
+      - main_sync.py
+      - main_sync_scoped.py
+
+# Test matrices - predefined test combinations
+test_matrices:
+  quick:
+    name: "Quick Test"
+    description: "Fast sanity check"
+    scenarios: ["sqlalchemy1x"]
+    configs: ["balanced"]
+    scales: ["small"]
+    rounds: 3
+
+  standard:
+    name: "Standard Test"
+    description: "Standard benchmark suite"
+    scenarios: ["sqlalchemy1x", "sqlalchemy2x"]
+    configs: ["balanced", "read_heavy", "write_intensive"]
+    scales: ["small", "medium"]
+    rounds: 5
+
+  comprehensive:
+    name: "Comprehensive Test"
+    description: "Full test suite"
+    scenarios: ["all"]
+    configs: ["all"]
+    scales: ["small", "medium"]
+    rounds: 5
+
+  stress:
+    name: "Stress Test"
+    description: "Large-scale stress testing"
+    scenarios: ["all"]
+    configs: ["all"]
+    scales: ["large"]
+    rounds: 3
+
+  framework_comparison:
+    name: "Framework Comparison"
+    description: "Compare SQLAlchemy with and without frameworks"
+    scenarios: ["sqlalchemy1x", "sqlalchemy1x_fastapi", "sqlalchemy1x_fastapi_dependency_injector"]
+    configs: ["balanced", "mixed_workload"]
+    scales: ["small", "medium"]
+    rounds: 5
+
+  version_comparison:
+    name: "Version Comparison"
+    description: "Compare SQLAlchemy 1.x vs 2.x"
+    scenarios: ["sqlalchemy1x", "sqlalchemy2x"]
+    configs: ["balanced", "read_heavy", "write_intensive"]
+    scales: ["small", "medium"]
+    rounds: 5
