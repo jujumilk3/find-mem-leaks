@@ -9,6 +9,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from tqdm import tqdm
 
+# Global debug flag
+DEBUG = False
+
 # define models
 Base = declarative_base()
 
